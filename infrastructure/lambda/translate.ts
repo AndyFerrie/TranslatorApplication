@@ -1,5 +1,9 @@
 import * as clientTranslate from "@aws-sdk/client-translate"
 import * as lambda from "aws-lambda"
+import {
+	TranslateRequest,
+	TranslateResponse,
+} from "@translatorapplication/shared-types"
 
 const translateClient = new clientTranslate.TranslateClient({})
 
@@ -11,7 +15,7 @@ export const index: lambda.APIGatewayProxyHandler = async function (
 			throw new Error("body is empty")
 		}
 
-		const body = JSON.parse(event.body)
+		const body = JSON.parse(event.body) as TranslateRequest
 		const { sourceLang, targetLang, text } = body
 
 		const now = new Date(Date.now()).toString()
@@ -26,7 +30,11 @@ export const index: lambda.APIGatewayProxyHandler = async function (
 		const result = await translateClient.send(translateCmd)
 		console.log(result)
 
-		const returnData = {
+		if (!result.TranslatedText) {
+			throw new Error("TranslatedText is empty")
+		}
+
+		const returnData: TranslateResponse = {
 			timestamp: now,
 			text: result.TranslatedText,
 		}
