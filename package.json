@@ -1,0 +1,12 @@
+{
+	"name": "translatorapplication",
+	"scripts": {
+		"frontend-dev": "npm run dev --workspace=@translatorapplication/frontend",
+		"deploy": "cd infrastructure; cdk deploy -f --require-approval never"
+	},
+	"workspaces": [
+		"apps/*",
+		"infrastructure",
+		"packages/*"
+	]
+}
