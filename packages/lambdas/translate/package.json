@@ -1,0 +1,10 @@
+{
+	"name": "@translatorapplication/translate",
+	"version": "1.0.0",
+	"main": "index.ts",
+	"devDependencies": {
+		"@translatorapplication/shared-types": "*",
+		"@types/node": "22.7.9",
+		"ts-node": "^10.9.2"
+	}
+}

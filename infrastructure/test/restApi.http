@@ -6,6 +6,6 @@ Accept: "application/json"
 
 {
     "sourceLang": "en",
-    "targetLang": "ru",
+    "targetLang": "es",
     "text": "walk"
 }
