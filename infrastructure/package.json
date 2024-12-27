@@ -12,6 +12,7 @@
 	},
 	"devDependencies": {
 		"@aws-sdk/client-translate": "^3.716.0",
+		"@translatorapplication/shared-types": "*",
 		"@types/aws-lambda": "^8.10.146",
 		"@types/jest": "^29.5.14",
 		"@types/node": "22.7.9",

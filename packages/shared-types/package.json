@@ -1,0 +1,4 @@
+{
+	"name": "@translatorapplication/shared-types",
+	"types": "./src/index.d.ts"
+}
