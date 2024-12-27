@@ -1,10 +1,14 @@
 "use client"
 
 import { useState } from "react"
+import {
+	TranslateRequest,
+	TranslateResponse,
+} from "@translatorapplication/shared-types"
 
 const URL = "https://1u1tcpeox0.execute-api.eu-west-2.amazonaws.com/prod/"
 
-function translateText({
+export const translateText = async ({
 	sourceLang,
 	targetLang,
 	text,
@@ -12,24 +16,33 @@ function translateText({
 	sourceLang: string
 	targetLang: string
 	text: string
-}) {
-	return fetch(URL, {
-		method: "POST",
-		body: JSON.stringify({
+}): Promise<TranslateResponse> => {
+	try {
+		const request: TranslateRequest = {
 			sourceLang,
 			targetLang,
 			text,
-		}),
-	})
-		.then((result) => result.json())
-		.catch((e) => e.toString())
+		}
+
+		const result = await fetch(URL, {
+			method: "POST",
+			body: JSON.stringify(request),
+		})
+
+		const returnValue = (await result.json()) as Promise<TranslateResponse>
+
+		return returnValue
+	} catch (e: unknown) {
+		console.error(e)
+		throw e
+	}
 }
 
 export default function Home() {
 	const [text, setText] = useState<string>("")
 	const [sourceLang, setSourceLang] = useState<string>("")
 	const [targetLang, setTargetLang] = useState<string>("")
-	const [outputText, setOutputText] = useState<any>(null)
+	const [outputText, setOutputText] = useState<TranslateResponse | null>(null)
 
 	return (
 		<main className="flex min-h-screen flex-col items-center justify-between p-24">
