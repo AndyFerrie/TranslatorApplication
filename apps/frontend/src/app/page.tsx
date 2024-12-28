@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import {
+	TranslateDBObject,
 	TranslateRequest,
 	TranslateResponse,
 } from "@translatorapplication/shared-types"
@@ -11,17 +12,17 @@ const URL = "https://1u1tcpeox0.execute-api.eu-west-2.amazonaws.com/prod/"
 export const translateText = async ({
 	sourceLang,
 	targetLang,
-	text,
+	sourceText,
 }: {
 	sourceLang: string
 	targetLang: string
-	text: string
+	sourceText: string
 }): Promise<TranslateResponse> => {
 	try {
 		const request: TranslateRequest = {
 			sourceLang,
 			targetLang,
-			text,
+			sourceText,
 		}
 
 		const result = await fetch(URL, {
@@ -38,11 +39,29 @@ export const translateText = async ({
 	}
 }
 
+export const getTranslations = async () => {
+	try {
+		const result = await fetch(URL, {
+			method: "GET",
+		})
+
+		const returnValue = (await result.json()) as Array<TranslateDBObject>
+
+		return returnValue
+	} catch (e: unknown) {
+		console.error(e)
+		throw e
+	}
+}
+
 export default function Home() {
-	const [text, setText] = useState<string>("")
+	const [sourceText, setSourceText] = useState<string>("")
 	const [sourceLang, setSourceLang] = useState<string>("")
 	const [targetLang, setTargetLang] = useState<string>("")
 	const [outputText, setOutputText] = useState<TranslateResponse | null>(null)
+	const [translations, setTranslations] = useState<Array<TranslateDBObject>>(
+		[]
+	)
 
 	return (
 		<main className="flex min-h-screen flex-col items-center p-24">
@@ -53,7 +72,7 @@ export default function Home() {
 					const result = await translateText({
 						sourceLang,
 						targetLang,
-						text,
+						sourceText,
 					})
 					setOutputText(result)
 				}}
@@ -67,8 +86,8 @@ export default function Home() {
 					</label>
 					<textarea
 						id="inputText"
-						value={text}
-						onChange={(event) => setText(event.target.value)}
+						value={sourceText}
+						onChange={(event) => setSourceText(event.target.value)}
 					/>
 				</div>
 
@@ -109,12 +128,45 @@ export default function Home() {
 					Translate
 				</button>
 			</form>
-			<pre
-				className="mt-4"
-				style={{ whiteSpace: "pre-wrap" }}
+
+			<div>
+				<p>Result:</p>
+				<pre
+					className="mt-4"
+					style={{ whiteSpace: "pre-wrap" }}
+				>
+					{JSON.stringify(outputText?.targetText, null, 2)}
+				</pre>
+			</div>
+
+			<button
+				className="btn bg-blue-500 p-2 mt-2 rounded-md"
+				type="button"
+				onClick={async () => {
+					const returnValue = await getTranslations()
+					setTranslations(returnValue)
+				}}
 			>
-				{JSON.stringify(outputText?.text, null, 2)}
-			</pre>
+				Get Translations
+			</button>
+
+			<div>
+				<p>Result:</p>
+				<pre
+					className="mt-4"
+					style={{ whiteSpace: "pre-wrap" }}
+				>
+					{translations.map((item) => (
+						<div key={item.requestId}>
+							<p>Translating: {item.sourceText}</p>
+							<p>
+								From: {item.sourceLang} To: {item.targetLang}
+							</p>
+							<p>Result: {item.targetText}</p>
+						</div>
+					))}
+				</pre>
+			</div>
 		</main>
 	)
 }
