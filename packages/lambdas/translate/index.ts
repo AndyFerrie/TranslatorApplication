@@ -2,6 +2,7 @@ import * as clientTranslate from "@aws-sdk/client-translate"
 import * as dynamodb from "@aws-sdk/client-dynamodb"
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb"
 import * as lambda from "aws-lambda"
+import { gateway } from "/opt/nodejs/utils-lambda-layer"
 import {
 	TranslateDBObject,
 	TranslateRequest,
@@ -69,28 +70,10 @@ export const translate: lambda.APIGatewayProxyHandler = async function (
 			new dynamodb.PutItemCommand(tableInsertCommand)
 		)
 
-		return {
-			statusCode: 200,
-			headers: {
-				"Access-Control-Allow-Origin": "*",
-				"Access-Control-Allow-Credentials": true,
-				"Access-Control-Allow-Methods": "*",
-				"Access-Control-Allow-Headers": "*",
-			},
-			body: JSON.stringify(returnData),
-		}
+		return gateway.createSuccessJsonResponse(returnData)
 	} catch (e: any) {
 		console.error(e)
-		return {
-			statusCode: 500,
-			headers: {
-				"Access-Control-Allow-Origin": "*",
-				"Access-Control-Allow-Credentials": true,
-				"Access-Control-Allow-Methods": "*",
-				"Access-Control-Allow-Headers": "*",
-			},
-			body: JSON.stringify(e.toString()),
-		}
+		return gateway.createErrorJsonResponse(e)
 	}
 }
 
@@ -120,27 +103,9 @@ export const getTranslations: lambda.APIGatewayProxyHandler = async function (
 		)
 		console.log("returnData", returnData)
 
-		return {
-			statusCode: 200,
-			headers: {
-				"Access-Control-Allow-Origin": "*",
-				"Access-Control-Allow-Credentials": true,
-				"Access-Control-Allow-Methods": "*",
-				"Access-Control-Allow-Headers": "*",
-			},
-			body: JSON.stringify(returnData),
-		}
+		return gateway.createSuccessJsonResponse(returnData)
 	} catch (e: any) {
 		console.error(e)
-		return {
-			statusCode: 500,
-			headers: {
-				"Access-Control-Allow-Origin": "*",
-				"Access-Control-Allow-Credentials": true,
-				"Access-Control-Allow-Methods": "*",
-				"Access-Control-Allow-Headers": "*",
-			},
-			body: JSON.stringify(e.toString()),
-		}
+		return gateway.createErrorJsonResponse(e)
 	}
 }
