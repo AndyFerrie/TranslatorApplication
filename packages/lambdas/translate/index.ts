@@ -21,7 +21,7 @@ if (!TRANSLATION_PARTITION_KEY) {
 const translateClient = new clientTranslate.TranslateClient({})
 const dynamodbClient = new dynamodb.DynamoDBClient({})
 
-export const index: lambda.APIGatewayProxyHandler = async function (
+export const translate: lambda.APIGatewayProxyHandler = async function (
 	event: lambda.APIGatewayProxyEvent,
 	context: lambda.Context
 ) {
@@ -68,6 +68,57 @@ export const index: lambda.APIGatewayProxyHandler = async function (
 		await dynamodbClient.send(
 			new dynamodb.PutItemCommand(tableInsertCommand)
 		)
+
+		return {
+			statusCode: 200,
+			headers: {
+				"Access-Control-Allow-Origin": "*",
+				"Access-Control-Allow-Credentials": true,
+				"Access-Control-Allow-Methods": "*",
+				"Access-Control-Allow-Headers": "*",
+			},
+			body: JSON.stringify(returnData),
+		}
+	} catch (e: any) {
+		console.error(e)
+		return {
+			statusCode: 500,
+			headers: {
+				"Access-Control-Allow-Origin": "*",
+				"Access-Control-Allow-Credentials": true,
+				"Access-Control-Allow-Methods": "*",
+				"Access-Control-Allow-Headers": "*",
+			},
+			body: JSON.stringify(e.toString()),
+		}
+	}
+}
+
+export const getTranslations: lambda.APIGatewayProxyHandler = async function (
+	event: lambda.APIGatewayProxyEvent,
+	context: lambda.Context
+) {
+	try {
+		const scanCommand: dynamodb.ScanCommandInput = {
+			TableName: TRANSLATION_TABLE_NAME,
+		}
+
+		console.log("scanCommand", scanCommand)
+
+		const { Items } = await dynamodbClient.send(
+			new dynamodb.ScanCommand(scanCommand)
+		)
+
+		if (!Items) {
+			throw new Error("no items found")
+		}
+
+		console.log("Items", Items)
+
+		const returnData = Items.map(
+			(item) => unmarshall(item) as TranslateDBObject
+		)
+		console.log("returnData", returnData)
 
 		return {
 			statusCode: 200,

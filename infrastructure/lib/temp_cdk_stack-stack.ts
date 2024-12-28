@@ -41,22 +41,47 @@ export class TempCdkStackStack extends cdk.Stack {
 		const translateLambdaPath = path.resolve(
 			path.join(lambdaDirectory, "translate/index.ts")
 		)
-		const lambdaFunc = new lambdaNodejs.NodejsFunction(this, "translate", {
-			entry: translateLambdaPath,
-			handler: "index",
-			runtime: Lambda.Runtime.NODEJS_20_X,
-			initialPolicy: [translateServicePolicy, translateTablePolicy],
-			environment: {
-				TRANSLATION_TABLE_NAME: table.tableName,
-				TRANSLATION_PARTITION_KEY: "requestId",
-			},
-		})
 
 		const restApi = new apiGateway.RestApi(this, "translateApi")
 
+		const translateLambda = new lambdaNodejs.NodejsFunction(
+			this,
+			"translateLambda",
+			{
+				entry: translateLambdaPath,
+				handler: "translate",
+				runtime: Lambda.Runtime.NODEJS_20_X,
+				initialPolicy: [translateServicePolicy, translateTablePolicy],
+				environment: {
+					TRANSLATION_TABLE_NAME: table.tableName,
+					TRANSLATION_PARTITION_KEY: "requestId",
+				},
+			}
+		)
+
 		restApi.root.addMethod(
 			"POST",
-			new apiGateway.LambdaIntegration(lambdaFunc)
+			new apiGateway.LambdaIntegration(translateLambda)
+		)
+
+		const getTranslationsLambda = new lambdaNodejs.NodejsFunction(
+			this,
+			"getTranslationsLambda",
+			{
+				entry: translateLambdaPath,
+				handler: "getTranslations",
+				runtime: Lambda.Runtime.NODEJS_20_X,
+				initialPolicy: [translateTablePolicy],
+				environment: {
+					TRANSLATION_TABLE_NAME: table.tableName,
+					TRANSLATION_PARTITION_KEY: "requestId",
+				},
+			}
+		)
+
+		restApi.root.addMethod(
+			"GET",
+			new apiGateway.LambdaIntegration(getTranslationsLambda)
 		)
 	}
 }
