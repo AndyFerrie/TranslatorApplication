@@ -2,7 +2,8 @@
 	"name": "translatorapplication",
 	"scripts": {
 		"frontend-dev": "npm run dev --workspace=@translatorapplication/frontend",
-		"deploy": "cd infrastructure; cdk deploy -f --require-approval never"
+		"deploy": "cd infrastructure; cdk deploy -f --require-approval never",
+		"build-utils-lambda-layer": "npm run build --workspace=@translatorapplication/utils-lambda-layer"
 	},
 	"workspaces": [
 		"apps/*",
