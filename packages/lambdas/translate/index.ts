@@ -1,14 +1,29 @@
 import * as clientTranslate from "@aws-sdk/client-translate"
+import * as dynamodb from "@aws-sdk/client-dynamodb"
+import { marshall, unmarshall } from "@aws-sdk/util-dynamodb"
 import * as lambda from "aws-lambda"
 import {
+	TranslateDBObject,
 	TranslateRequest,
 	TranslateResponse,
 } from "@translatorapplication/shared-types"
 
+const { TRANSLATION_TABLE_NAME, TRANSLATION_PARTITION_KEY } = process.env
+
+if (!TRANSLATION_TABLE_NAME) {
+	throw new Error("TRANSLATION_TABLE_NAME is empty")
+}
+
+if (!TRANSLATION_PARTITION_KEY) {
+	throw new Error("TRANSLATION_PARTITION_KEY is empty")
+}
+
 const translateClient = new clientTranslate.TranslateClient({})
+const dynamodbClient = new dynamodb.DynamoDBClient({})
 
 export const index: lambda.APIGatewayProxyHandler = async function (
-	event: lambda.APIGatewayProxyEvent
+	event: lambda.APIGatewayProxyEvent,
+	context: lambda.Context
 ) {
 	try {
 		if (!event.body) {
@@ -38,6 +53,21 @@ export const index: lambda.APIGatewayProxyHandler = async function (
 			timestamp: now,
 			text: result.TranslatedText,
 		}
+
+		const tableObj: TranslateDBObject = {
+			requestId: context.awsRequestId,
+			...body,
+			...returnData,
+		}
+
+		const tableInsertCommand: dynamodb.PutItemCommandInput = {
+			TableName: TRANSLATION_TABLE_NAME,
+			Item: marshall(tableObj),
+		}
+
+		await dynamodbClient.send(
+			new dynamodb.PutItemCommand(tableInsertCommand)
+		)
 
 		return {
 			statusCode: 200,
