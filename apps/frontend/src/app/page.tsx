@@ -45,8 +45,9 @@ export default function Home() {
 	const [outputText, setOutputText] = useState<TranslateResponse | null>(null)
 
 	return (
-		<main className="flex min-h-screen flex-col items-center justify-between p-24">
+		<main className="flex min-h-screen flex-col items-center p-24">
 			<form
+				className="flex flex-col gap-4"
 				onSubmit={async (event) => {
 					event.preventDefault()
 					const result = await translateText({
@@ -57,8 +58,13 @@ export default function Home() {
 					setOutputText(result)
 				}}
 			>
-				<div>
-					<label htmlFor="inputText">Input Text</label>
+				<div className="flex flex-col">
+					<label
+						className="mb-2"
+						htmlFor="inputText"
+					>
+						Input Text
+					</label>
 					<textarea
 						id="inputText"
 						value={text}
@@ -66,8 +72,13 @@ export default function Home() {
 					/>
 				</div>
 
-				<div>
-					<label htmlFor="sourceLang">Source Language</label>
+				<div className="flex flex-col">
+					<label
+						className="mb-2"
+						htmlFor="sourceLang"
+					>
+						Source Language
+					</label>
 					<input
 						id="sourceLang"
 						value={sourceLang}
@@ -76,8 +87,13 @@ export default function Home() {
 					/>
 				</div>
 
-				<div>
-					<label htmlFor="targetLang">Target Language</label>
+				<div className="flex flex-col">
+					<label
+						className="mb-2"
+						htmlFor="targetLang"
+					>
+						Target Language
+					</label>
 					<input
 						id="targetLang"
 						value={targetLang}
@@ -90,15 +106,14 @@ export default function Home() {
 					className="btn bg-blue-500 p-2 mt-2 rounded-md"
 					type="submit"
 				>
-					{" "}
-					Translate{" "}
+					Translate
 				</button>
 			</form>
 			<pre
+				className="mt-4"
 				style={{ whiteSpace: "pre-wrap" }}
-				className="w-full"
 			>
-				{JSON.stringify(outputText, null, 2)}
+				{JSON.stringify(outputText?.text, null, 2)}
 			</pre>
 		</main>
 	)
