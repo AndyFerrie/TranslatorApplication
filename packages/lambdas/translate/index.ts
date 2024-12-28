@@ -31,7 +31,7 @@ export const translate: lambda.APIGatewayProxyHandler = async function (
 		}
 
 		const body = JSON.parse(event.body) as TranslateRequest
-		const { sourceLang, targetLang, text } = body
+		const { sourceLang, targetLang, sourceText } = body
 
 		const now = new Date(Date.now()).toString()
 		console.log(now)
@@ -39,7 +39,7 @@ export const translate: lambda.APIGatewayProxyHandler = async function (
 		const translateCmd = new clientTranslate.TranslateTextCommand({
 			SourceLanguageCode: sourceLang,
 			TargetLanguageCode: targetLang,
-			Text: text,
+			Text: sourceText,
 		})
 
 		const result = await translateClient.send(translateCmd)
@@ -51,7 +51,7 @@ export const translate: lambda.APIGatewayProxyHandler = async function (
 
 		const returnData: TranslateResponse = {
 			timestamp: now,
-			text: result.TranslatedText,
+			targetText: result.TranslatedText,
 		}
 
 		const tableObj: TranslateDBObject = {
