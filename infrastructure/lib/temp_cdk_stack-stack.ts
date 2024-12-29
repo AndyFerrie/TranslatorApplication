@@ -9,6 +9,9 @@ import * as dynamoDb from "aws-cdk-lib/aws-dynamodb"
 import * as s3 from "aws-cdk-lib/aws-s3"
 import * as s3deploy from "aws-cdk-lib/aws-s3-deployment"
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront"
+import * as route53 from "aws-cdk-lib/aws-route53"
+import * as route53Targets from "aws-cdk-lib/aws-route53-targets"
+import * as acm from "aws-cdk-lib/aws-certificatemanager"
 
 export class TempCdkStackStack extends cdk.Stack {
 	constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -20,6 +23,20 @@ export class TempCdkStackStack extends cdk.Stack {
 			projectRoot,
 			"packages/lambda-layers"
 		)
+
+		const domain = "drewferrie.co.uk"
+		const fullUrl = `www.${domain}`
+		const apiUrl = `api.${domain}`
+
+		const zone = route53.HostedZone.fromLookup(this, "zone", {
+			domainName: domain,
+		})
+
+		const certificate = new acm.Certificate(this, "certificate", {
+			domainName: domain,
+			subjectAlternativeNames: [fullUrl, apiUrl],
+			validation: acm.CertificateValidation.fromDns(zone),
+		})
 
 		const table = new dynamoDb.Table(this, "translations", {
 			tableName: "translations",
@@ -63,7 +80,12 @@ export class TempCdkStackStack extends cdk.Stack {
 			}
 		)
 
-		const restApi = new apiGateway.RestApi(this, "translateApi")
+		const restApi = new apiGateway.RestApi(this, "translateApi", {
+			domainName: {
+				domainName: apiUrl,
+				certificate,
+			},
+		})
 
 		const translateLambda = new lambdaNodejs.NodejsFunction(
 			this,
@@ -107,6 +129,11 @@ export class TempCdkStackStack extends cdk.Stack {
 			new apiGateway.LambdaIntegration(getTranslationsLambda)
 		)
 
+		const viewerCertificate =
+			cloudfront.ViewerCertificate.fromAcmCertificate(certificate, {
+				aliases: [domain, fullUrl],
+			})
+
 		const bucket = new s3.Bucket(this, "WebsiteBucket", {
 			websiteIndexDocument: "index.html",
 			websiteErrorDocument: "404.html",
@@ -125,6 +152,7 @@ export class TempCdkStackStack extends cdk.Stack {
 			this,
 			"WebsiteCloudfrontDist",
 			{
+				viewerCertificate,
 				originConfigs: [
 					{
 						s3OriginSource: {
@@ -145,6 +173,30 @@ export class TempCdkStackStack extends cdk.Stack {
 			sources: [s3deploy.Source.asset("../apps/frontend/dist")],
 			distribution: distro,
 			distributionPaths: ["/*"],
+		})
+
+		new route53.ARecord(this, "route53Domain", {
+			zone,
+			recordName: domain,
+			target: route53.RecordTarget.fromAlias(
+				new route53Targets.CloudFrontTarget(distro)
+			),
+		})
+
+		new route53.ARecord(this, "route53FullUrl", {
+			zone,
+			recordName: "www",
+			target: route53.RecordTarget.fromAlias(
+				new route53Targets.CloudFrontTarget(distro)
+			),
+		})
+
+		new route53.ARecord(this, "apiDns", {
+			zone,
+			recordName: "api",
+			target: route53.RecordTarget.fromAlias(
+				new route53Targets.ApiGateway(restApi)
+			),
 		})
 
 		new cdk.CfnOutput(this, "webUrl", {
