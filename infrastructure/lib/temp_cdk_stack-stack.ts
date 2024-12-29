@@ -1,7 +1,7 @@
 import * as cdk from "aws-cdk-lib"
 import * as path from "path"
 import { Construct } from "constructs"
-import * as Lambda from "aws-cdk-lib/aws-lambda"
+import * as lambda from "aws-cdk-lib/aws-lambda"
 import * as lambdaNodejs from "aws-cdk-lib/aws-lambda-nodejs"
 import * as apiGateway from "aws-cdk-lib/aws-apigateway"
 import * as iam from "aws-cdk-lib/aws-iam"
@@ -13,6 +13,10 @@ export class TempCdkStackStack extends cdk.Stack {
 
 		const projectRoot = "../"
 		const lambdaDirectory = path.join(projectRoot, "packages/lambdas")
+		const lambdaLayersDirPath = path.join(
+			projectRoot,
+			"packages/lambda-layers"
+		)
 
 		const table = new dynamoDb.Table(this, "translations", {
 			tableName: "translations",
@@ -42,6 +46,20 @@ export class TempCdkStackStack extends cdk.Stack {
 			path.join(lambdaDirectory, "translate/index.ts")
 		)
 
+		const utilsLambdaLayerPath = path.resolve(
+			path.join(lambdaLayersDirPath, "utils-lambda-layer")
+		)
+
+		const utilsLambdaLayer = new lambda.LayerVersion(
+			this,
+			"utilsLambdaLayer",
+			{
+				code: lambda.Code.fromAsset(utilsLambdaLayerPath),
+				compatibleRuntimes: [lambda.Runtime.NODEJS_20_X],
+				removalPolicy: cdk.RemovalPolicy.DESTROY,
+			}
+		)
+
 		const restApi = new apiGateway.RestApi(this, "translateApi")
 
 		const translateLambda = new lambdaNodejs.NodejsFunction(
@@ -50,8 +68,9 @@ export class TempCdkStackStack extends cdk.Stack {
 			{
 				entry: translateLambdaPath,
 				handler: "translate",
-				runtime: Lambda.Runtime.NODEJS_20_X,
+				runtime: lambda.Runtime.NODEJS_20_X,
 				initialPolicy: [translateServicePolicy, translateTablePolicy],
+				layers: [utilsLambdaLayer],
 				environment: {
 					TRANSLATION_TABLE_NAME: table.tableName,
 					TRANSLATION_PARTITION_KEY: "requestId",
@@ -70,8 +89,9 @@ export class TempCdkStackStack extends cdk.Stack {
 			{
 				entry: translateLambdaPath,
 				handler: "getTranslations",
-				runtime: Lambda.Runtime.NODEJS_20_X,
+				runtime: lambda.Runtime.NODEJS_20_X,
 				initialPolicy: [translateTablePolicy],
+				layers: [utilsLambdaLayer],
 				environment: {
 					TRANSLATION_TABLE_NAME: table.tableName,
 					TRANSLATION_PARTITION_KEY: "requestId",
