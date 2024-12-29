@@ -9,7 +9,7 @@ import {
 
 const URL = "https://1u1tcpeox0.execute-api.eu-west-2.amazonaws.com/prod/"
 
-export const translateText = async ({
+const translateText = async ({
 	sourceLang,
 	targetLang,
 	sourceText,
@@ -39,7 +39,7 @@ export const translateText = async ({
 	}
 }
 
-export const getTranslations = async () => {
+const getTranslations = async () => {
 	try {
 		const result = await fetch(URL, {
 			method: "GET",
