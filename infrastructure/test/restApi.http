@@ -1,4 +1,4 @@
-@URL=https://kllf1xhp85.execute-api.us-east-1.amazonaws.com/prod/
+@URL=https://api.drewferrie.co.uk/
 
 POST {{URL}} HTTP/1.1
 Content-Type: application/json
