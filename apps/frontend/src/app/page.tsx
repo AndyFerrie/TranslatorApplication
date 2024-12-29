@@ -7,7 +7,7 @@ import {
 	TranslateResponse,
 } from "@translatorapplication/shared-types"
 
-const URL = "https://1u1tcpeox0.execute-api.eu-west-2.amazonaws.com/prod/"
+const URL = "https://kllf1xhp85.execute-api.us-east-1.amazonaws.com/prod/"
 
 const translateText = async ({
 	sourceLang,
