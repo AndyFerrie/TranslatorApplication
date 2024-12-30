@@ -7,6 +7,7 @@ import * as acm from "aws-cdk-lib/aws-certificatemanager"
 import * as s3 from "aws-cdk-lib/aws-s3"
 import * as s3deploy from "aws-cdk-lib/aws-s3-deployment"
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront"
+import { frontendDistPath } from "../helpers"
 
 export interface StaticWebsiteDeploymentProps extends cdk.StackProps {
 	domain: string
@@ -65,7 +66,7 @@ export class StaticWebsiteDeployment extends Construct {
 
 		new s3deploy.BucketDeployment(this, "WebsiteDeploy", {
 			destinationBucket: bucket,
-			sources: [s3deploy.Source.asset("../apps/frontend/dist")],
+			sources: [s3deploy.Source.asset(frontendDistPath)],
 			distribution: distro,
 			distributionPaths: ["/*"],
 		})
