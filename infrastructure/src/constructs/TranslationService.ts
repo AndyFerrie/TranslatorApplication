@@ -1,8 +1,6 @@
 import { Construct } from "constructs"
 import * as cdk from "aws-cdk-lib"
 import * as apiGateway from "aws-cdk-lib/aws-apigateway"
-import * as route53 from "aws-cdk-lib/aws-route53"
-import * as acm from "aws-cdk-lib/aws-certificatemanager"
 import * as lambda from "aws-cdk-lib/aws-lambda"
 import * as lambdaNodejs from "aws-cdk-lib/aws-lambda-nodejs"
 import * as iam from "aws-cdk-lib/aws-iam"
