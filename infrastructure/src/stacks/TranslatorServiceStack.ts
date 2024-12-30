@@ -7,6 +7,9 @@ import {
 	StaticWebsiteDeployment,
 	CertificateWrapper,
 } from "../constructs"
+import { getConfig } from "../helpers"
+
+const config = getConfig()
 
 export class TranslatorServiceStack extends cdk.Stack {
 	constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -19,9 +22,9 @@ export class TranslatorServiceStack extends cdk.Stack {
 			"packages/lambda-layers"
 		)
 
-		const domain = "drewferrie.co.uk"
-		const webUrl = `www.${domain}`
-		const apiUrl = `api.${domain}`
+		const domain = config.domain
+		const webUrl = `${config.webSubdomain}.${domain}`
+		const apiUrl = `${config.apiSubdomain}.${domain}`
 
 		const certificate = new CertificateWrapper(this, "certificateWrapper", {
 			domain,
