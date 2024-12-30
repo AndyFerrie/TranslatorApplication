@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import * as cdk from "aws-cdk-lib"
-import { TempCdkStackStack } from "../lib/temp_cdk_stack-stack"
+import { TranslatorServiceStack } from "./stacks"
 
 const app = new cdk.App()
-new TempCdkStackStack(app, "TempCdkStackStack", {
+new TranslatorServiceStack(app, "TranslatorService", {
 	env: { account: "485713242633", region: "us-east-1" },
 })
