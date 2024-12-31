@@ -2,12 +2,11 @@ import { Construct } from "constructs"
 import * as cdk from "aws-cdk-lib"
 import * as apiGateway from "aws-cdk-lib/aws-apigateway"
 import * as lambda from "aws-cdk-lib/aws-lambda"
-import * as lambdaNodejs from "aws-cdk-lib/aws-lambda-nodejs"
 import * as iam from "aws-cdk-lib/aws-iam"
 import * as dynamoDb from "aws-cdk-lib/aws-dynamodb"
 import * as path from "path"
 import { RestApiService } from "./RestApiService"
-import { lambdaDirectory, lambdaLayersDirPath } from "../helpers"
+import { createNodeJsLambda, lambdaLayersDirPath } from "../helpers"
 
 export interface TranslationServiceProps extends cdk.StackProps {
 	restApi: RestApiService
@@ -21,10 +20,6 @@ export class TranslationService extends Construct {
 		{ restApi }: TranslationServiceProps
 	) {
 		super(scope, id)
-
-		const translateLambdaPath = path.resolve(
-			path.join(lambdaDirectory, "translate/index.ts")
-		)
 
 		const utilsLambdaLayerPath = path.resolve(
 			path.join(lambdaLayersDirPath, "utils-lambda-layer")
@@ -64,36 +59,30 @@ export class TranslationService extends Construct {
 			}
 		)
 
-		const translateLambda = new lambdaNodejs.NodejsFunction(
-			this,
-			"translateLambda",
-			{
-				entry: translateLambdaPath,
-				handler: "translate",
-				runtime: lambda.Runtime.NODEJS_20_X,
-				initialPolicy: [translateServicePolicy, translateTablePolicy],
-				layers: [utilsLambdaLayer],
-				environment: {
-					TRANSLATION_TABLE_NAME: table.tableName,
-					TRANSLATION_PARTITION_KEY: "requestId",
-				},
-			}
-		)
+		const translateLambda = createNodeJsLambda(this, "translateLambda", {
+			lambdaRelativePath: "translate/index.ts",
+			handler: "translate",
+			initialPolicy: [translateServicePolicy, translateTablePolicy],
+			lambdaLayers: [utilsLambdaLayer],
+			environment: {
+				TRANSLATION_TABLE_NAME: table.tableName,
+				TRANSLATION_PARTITION_KEY: "requestId",
+			},
+		})
 
 		restApi.addTranslateMethod({
 			httpMethod: "POST",
 			lambda: translateLambda,
 		})
 
-		const getTranslationsLambda = new lambdaNodejs.NodejsFunction(
+		const getTranslationsLambda = createNodeJsLambda(
 			this,
 			"getTranslationsLambda",
 			{
-				entry: translateLambdaPath,
+				lambdaRelativePath: "translate/index.ts",
 				handler: "getTranslations",
-				runtime: lambda.Runtime.NODEJS_20_X,
 				initialPolicy: [translateTablePolicy],
-				layers: [utilsLambdaLayer],
+				lambdaLayers: [utilsLambdaLayer],
 				environment: {
 					TRANSLATION_TABLE_NAME: table.tableName,
 					TRANSLATION_PARTITION_KEY: "requestId",
