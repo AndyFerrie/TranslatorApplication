@@ -48,6 +48,39 @@ const getUsername = (event: lambda.APIGatewayProxyEvent) => {
 	return username
 }
 
+export const publicTranslate: lambda.APIGatewayProxyHandler = async function (
+	event: lambda.APIGatewayProxyEvent,
+	context: lambda.Context
+) {
+	try {
+		if (!event.body) {
+			throw new exception.MissingBodyData()
+		}
+
+		const body = JSON.parse(event.body) as TranslateRequest
+
+		const now = new Date(Date.now()).toString()
+		console.log(now)
+
+		const result = await getTranslation(body)
+		console.log(result)
+
+		if (!result.TranslatedText) {
+			throw new exception.MissingParameters("TranslatedText")
+		}
+
+		const returnData: TranslateResponse = {
+			timestamp: now,
+			targetText: result.TranslatedText,
+		}
+
+		return gateway.createSuccessJsonResponse(returnData)
+	} catch (e: any) {
+		console.error(e)
+		return gateway.createErrorJsonResponse(e)
+	}
+}
+
 export const userTranslate: lambda.APIGatewayProxyHandler = async function (
 	event: lambda.APIGatewayProxyEvent,
 	context: lambda.Context
