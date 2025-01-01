@@ -5,6 +5,7 @@ import * as cognito from "aws-cdk-lib/aws-cognito"
 export interface UserAuthSupportServiceProps extends cdk.StackProps {}
 
 export class UserAuthSupportService extends Construct {
+	userPool: cognito.UserPool
 	constructor(
 		scope: Construct,
 		id: string,
@@ -12,7 +13,7 @@ export class UserAuthSupportService extends Construct {
 	) {
 		super(scope, id)
 
-		const userPool = new cognito.UserPool(this, "translatorUserPool", {
+		this.userPool = new cognito.UserPool(this, "translatorUserPool", {
 			selfSignUpEnabled: true,
 			signInAliases: { email: true },
 			autoVerify: { email: true },
@@ -23,7 +24,7 @@ export class UserAuthSupportService extends Construct {
 			this,
 			"translatorUserPoolClient",
 			{
-				userPool,
+				userPool: this.userPool,
 				userPoolClientName: "translator-web-client",
 				generateSecret: false,
 				supportedIdentityProviders: [
@@ -33,7 +34,7 @@ export class UserAuthSupportService extends Construct {
 		)
 
 		new cdk.CfnOutput(this, "userPoolId", {
-			value: userPool.userPoolId,
+			value: this.userPool.userPoolId,
 		})
 
 		new cdk.CfnOutput(this, "userPoolClientId", {

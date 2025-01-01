@@ -6,6 +6,7 @@ import {
 	TranslateRequest,
 	TranslateResponse,
 } from "@translatorapplication/shared-types"
+import { fetchAuthSession } from "aws-amplify/auth"
 
 const URL = "https://api.drewferrie.co.uk/"
 
@@ -25,9 +26,14 @@ const translateText = async ({
 			sourceText,
 		}
 
+		const authToken = (await fetchAuthSession()).tokens?.idToken?.toString()
+
 		const result = await fetch(URL, {
 			method: "POST",
 			body: JSON.stringify(request),
+			headers: {
+				Authorization: `Bearer ${authToken}`,
+			},
 		})
 
 		const returnValue = (await result.json()) as Promise<TranslateResponse>
@@ -41,8 +47,13 @@ const translateText = async ({
 
 const getTranslations = async () => {
 	try {
+		const authToken = (await fetchAuthSession()).tokens?.idToken?.toString()
+
 		const result = await fetch(URL, {
 			method: "GET",
+			headers: {
+				Authorization: `Bearer ${authToken}`,
+			},
 		})
 
 		const returnValue = (await result.json()) as Array<TranslateDBObject>
