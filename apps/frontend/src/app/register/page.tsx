@@ -189,7 +189,7 @@ function AutoSignIn({
 			onStepChange(nextStep)
 		}
 		asyncSignIn()
-	}, [])
+	}, [onStepChange])
 	return <div>Signing in...</div>
 }
 
