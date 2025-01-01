@@ -11,5 +11,6 @@ export type TranslateResponse = {
 
 export type TranslateDBObject = TranslateRequest &
 	TranslateResponse & {
+		username: string
 		requestId: string
 	}
