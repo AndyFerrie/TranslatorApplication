@@ -87,7 +87,6 @@ export default function Home() {
 			</form>
 
 			<div className="flex flex-col">
-				<h3 className="mt-4 text-lg">Your saved translations:</h3>
 				{translations.map((item) => (
 					<div
 						className="flex flex-col justify-between rounded-lg p-4 m-4 bg-slate-400"
