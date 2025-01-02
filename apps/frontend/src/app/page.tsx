@@ -123,7 +123,6 @@ export default function Home() {
 	const [sourceLang, setSourceLang] = useState<string>("")
 	const [targetLang, setTargetLang] = useState<string>("")
 	const [outputText, setOutputText] = useState<TranslateResponse | null>(null)
-	const [error, setError] = useState<string | null>(null)
 	const [translations, setTranslations] = useState<Array<TranslateResult>>([])
 
 	return (
@@ -207,8 +206,6 @@ export default function Home() {
 					Translate
 				</button>
 			</form>
-
-			{error && <p className="text-red-600 font-bold">{error}</p>}
 
 			<div>
 				<p>Result:</p>
