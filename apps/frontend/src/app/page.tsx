@@ -146,11 +146,7 @@ export default function Home() {
 							throw new Error("User not logged in")
 						}
 					} catch (error: unknown) {
-						if (error instanceof Error) {
-							setError(error.message)
-						} else {
-							setError(String(error))
-						}
+						console.log(error)
 						result = await translatePublicText({
 							sourceLang,
 							targetLang,
