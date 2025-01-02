@@ -123,6 +123,7 @@ export default function Home() {
 	const [sourceLang, setSourceLang] = useState<string>("")
 	const [targetLang, setTargetLang] = useState<string>("")
 	const [outputText, setOutputText] = useState<TranslateResponse | null>(null)
+	const [error, setError] = useState<string | null>(null)
 	const [translations, setTranslations] = useState<Array<TranslateDBObject>>(
 		[]
 	)
@@ -146,8 +147,12 @@ export default function Home() {
 						} else {
 							throw new Error("User not logged in")
 						}
-					} catch (error) {
-						console.log(error)
+					} catch (error: unknown) {
+						if (error instanceof Error) {
+							setError(error.message)
+						} else {
+							setError(String(error))
+						}
 						result = await translatePublicText({
 							sourceLang,
 							targetLang,
@@ -208,6 +213,8 @@ export default function Home() {
 					Translate
 				</button>
 			</form>
+
+			{error && <p className="text-red-600 font-bold">{error}</p>}
 
 			<div>
 				<p>Result:</p>

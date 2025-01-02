@@ -21,6 +21,7 @@ function RegistrationForm({
 	const [email, setEmail] = useState<string>("")
 	const [password, setPassword] = useState<string>("")
 	const [password2, setPassword2] = useState<string>("")
+	const [error, setError] = useState<string | null>(null)
 
 	return (
 		<form
@@ -44,8 +45,12 @@ function RegistrationForm({
 					})
 
 					onStepChange(nextStep)
-				} catch (error) {
-					console.log(error)
+				} catch (error: unknown) {
+					if (error instanceof Error) {
+						setError(error.message)
+					} else {
+						setError(String(error))
+					}
 				}
 			}}
 		>
@@ -107,6 +112,7 @@ function RegistrationForm({
 			>
 				Login
 			</Link>
+			{error && <p className="text-red-600 font-bold">{error}</p>}
 		</form>
 	)
 }
