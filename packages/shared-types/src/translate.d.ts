@@ -9,8 +9,13 @@ export type TranslateResponse = {
 	targetText: string
 }
 
-export type TranslateDBObject = TranslateRequest &
-	TranslateResponse & {
-		username: string
-		requestId: string
-	}
+export type TranslatePrimaryKey = {
+	username: string
+	requestId: string
+}
+
+export type TranslateResult = TranslateRequest &
+	TranslateResponse &
+	TranslatePrimaryKey
+
+export type TranslateResultList = Array<TranslateResult>

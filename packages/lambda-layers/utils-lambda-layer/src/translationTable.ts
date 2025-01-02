@@ -1,6 +1,9 @@
 import * as dynamodb from "@aws-sdk/client-dynamodb"
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb"
-import { TranslateDBObject } from "@translatorapplication/shared-types"
+import {
+	TranslatePrimaryKey,
+	TranslateResult,
+} from "@translatorapplication/shared-types"
 
 export class translationTable {
 	tableName: string
@@ -23,7 +26,7 @@ export class translationTable {
 		this.dynamodbClient = new dynamodb.DynamoDBClient({})
 	}
 
-	async insert(data: TranslateDBObject) {
+	async insert(data: TranslateResult) {
 		const tableInsertCommand: dynamodb.PutItemCommandInput = {
 			TableName: this.tableName,
 			Item: marshall(data),
@@ -34,7 +37,7 @@ export class translationTable {
 		)
 	}
 
-	async query({ username }: { username: string }) {
+	async query({ username }: TranslatePrimaryKey) {
 		const queryCommand: dynamodb.QueryCommandInput = {
 			TableName: this.tableName,
 			KeyConditionExpression: "#PARTITION_KEY = :username",
@@ -56,23 +59,17 @@ export class translationTable {
 		}
 
 		const returnData = Items.map(
-			(item) => unmarshall(item) as TranslateDBObject
+			(item) => unmarshall(item) as TranslateResult
 		)
 		return returnData
 	}
 
-	async delete({
-		username,
-		requestId,
-	}: {
-		username: string
-		requestId: string
-	}) {
+	async delete(item: TranslatePrimaryKey) {
 		const deleteCommand: dynamodb.DeleteItemCommandInput = {
 			TableName: this.tableName,
 			Key: {
-				[this.partitionKey]: { S: username },
-				[this.sortKey]: { S: requestId },
+				[this.partitionKey]: { S: item.username },
+				[this.sortKey]: { S: item.requestId },
 			},
 		}
 
@@ -80,7 +77,7 @@ export class translationTable {
 			new dynamodb.DeleteItemCommand(deleteCommand)
 		)
 
-		return this.query({ username })
+		return item
 	}
 
 	async getAll() {
@@ -97,7 +94,7 @@ export class translationTable {
 		}
 
 		const returnData = Items.map(
-			(item) => unmarshall(item) as TranslateDBObject
+			(item) => unmarshall(item) as TranslateResult
 		)
 		return returnData
 	}

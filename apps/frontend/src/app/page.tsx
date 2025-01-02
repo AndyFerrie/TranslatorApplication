@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import {
-	TranslateDBObject,
+	TranslateResult,
 	TranslateRequest,
 	TranslateResponse,
 } from "@translatorapplication/shared-types"
@@ -85,7 +85,7 @@ const getUsersTranslations = async () => {
 			},
 		})
 
-		const returnValue = (await result.json()) as Array<TranslateDBObject>
+		const returnValue = (await result.json()) as Array<TranslateResult>
 
 		return returnValue
 	} catch (e: unknown) {
@@ -109,7 +109,7 @@ const deleteUserTranslation = async (item: {
 			},
 		})
 
-		const returnValue = (await result.json()) as Array<TranslateDBObject>
+		const returnValue = (await result.json()) as Array<TranslateResult>
 
 		return returnValue
 	} catch (e: unknown) {
@@ -124,9 +124,7 @@ export default function Home() {
 	const [targetLang, setTargetLang] = useState<string>("")
 	const [outputText, setOutputText] = useState<TranslateResponse | null>(null)
 	const [error, setError] = useState<string | null>(null)
-	const [translations, setTranslations] = useState<Array<TranslateDBObject>>(
-		[]
-	)
+	const [translations, setTranslations] = useState<Array<TranslateResult>>([])
 
 	return (
 		<main className="flex min-h-screen flex-col items-center p-24">
