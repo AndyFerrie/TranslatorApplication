@@ -61,6 +61,28 @@ export class translationTable {
 		return returnData
 	}
 
+	async delete({
+		username,
+		requestId,
+	}: {
+		username: string
+		requestId: string
+	}) {
+		const deleteCommand: dynamodb.DeleteItemCommandInput = {
+			TableName: this.tableName,
+			Key: {
+				[this.partitionKey]: { S: username },
+				[this.sortKey]: { S: requestId },
+			},
+		}
+
+		await this.dynamodbClient.send(
+			new dynamodb.DeleteItemCommand(deleteCommand)
+		)
+
+		return this.query({ username })
+	}
+
 	async getAll() {
 		const scanCommand: dynamodb.ScanCommandInput = {
 			TableName: this.tableName,

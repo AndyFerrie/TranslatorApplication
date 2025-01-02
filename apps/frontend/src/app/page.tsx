@@ -94,6 +94,30 @@ const getUsersTranslations = async () => {
 	}
 }
 
+const deleteUserTranslation = async (item: {
+	requestId: string
+	username: string
+}) => {
+	try {
+		const authToken = (await fetchAuthSession()).tokens?.idToken?.toString()
+
+		const result = await fetch(`${URL}/user`, {
+			method: "DELETE",
+			body: JSON.stringify(item),
+			headers: {
+				Authorization: `Bearer ${authToken}`,
+			},
+		})
+
+		const returnValue = (await result.json()) as Array<TranslateDBObject>
+
+		return returnValue
+	} catch (e: unknown) {
+		console.error(e)
+		throw e
+	}
+}
+
 export default function Home() {
 	const [sourceText, setSourceText] = useState<string>("")
 	const [sourceLang, setSourceLang] = useState<string>("")
@@ -206,22 +230,38 @@ export default function Home() {
 				Get Translations
 			</button>
 
-			<div>
-				<p>Result:</p>
-				<pre
-					className="mt-4"
-					style={{ whiteSpace: "pre-wrap" }}
-				>
-					{translations.map((item) => (
-						<div key={item.requestId}>
-							<p>Translating: {item.sourceText}</p>
-							<p>
-								From: {item.sourceLang} To: {item.targetLang}
-							</p>
-							<p>Result: {item.targetText}</p>
-						</div>
-					))}
-				</pre>
+			<div className="flex flex-col">
+				<h3 className="mt-4 text-lg">Your saved translations:</h3>
+				{translations.map((item) => (
+					<div
+						className="flex flex-col justify-between rounded-lg p-4 m-4 bg-slate-400"
+						key={item.requestId}
+					>
+						<p>From: {item.sourceLang}</p>
+						<p className="bg-slate-200 p-1 rounded-md my-2">
+							{item.sourceText}
+						</p>
+						<p>To: {item.targetLang}</p>
+						<p className="bg-slate-200 p-1 rounded-md my-2">
+							{item.targetText}
+						</p>
+						<button
+							className="btn bg-red-500 hover:bg-red-400 rounded-md mt-2"
+							type="button"
+							onClick={async () => {
+								const returnValue = await deleteUserTranslation(
+									{
+										requestId: item.requestId,
+										username: item.username,
+									}
+								)
+								setTranslations(returnValue)
+							}}
+						>
+							X
+						</button>
+					</div>
+				))}
 			</div>
 		</main>
 	)

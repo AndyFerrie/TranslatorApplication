@@ -141,3 +141,34 @@ export const getUserTranslations: lambda.APIGatewayProxyHandler =
 			return gateway.createErrorJsonResponse(e)
 		}
 	}
+
+export const deleteUserTranslation: lambda.APIGatewayProxyHandler =
+	async function (
+		event: lambda.APIGatewayProxyEvent,
+		context: lambda.Context
+	) {
+		try {
+			const username = getUsername(event)
+
+			if (!event.body) {
+				throw new exception.MissingBodyData()
+			}
+
+			let body = JSON.parse(event.body) as { requestId: string }
+
+			if (!body.requestId) {
+				throw new exception.MissingParameters("requestId")
+			}
+
+			let requestId = body.requestId
+
+			const returnData = await translateTable.delete({
+				username,
+				requestId,
+			})
+			return gateway.createSuccessJsonResponse(returnData)
+		} catch (e: any) {
+			console.error(e)
+			return gateway.createErrorJsonResponse(e)
+		}
+	}

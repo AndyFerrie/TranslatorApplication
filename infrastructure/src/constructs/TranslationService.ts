@@ -104,6 +104,25 @@ export class TranslationService extends Construct {
 			isAuth: true,
 		})
 
+		const userDeleteTranslationLambda = createNodeJsLambda(
+			this,
+			"userDeleteTranslationLambda",
+			{
+				lambdaRelativePath: "translate/index.ts",
+				handler: "deleteUserTranslation",
+				initialPolicy: [translateTablePolicy],
+				lambdaLayers: [utilsLambdaLayer],
+				environment,
+			}
+		)
+
+		restApi.addTranslateMethod({
+			resource: restApi.userResource,
+			httpMethod: "DELETE",
+			lambda: userDeleteTranslationLambda,
+			isAuth: true,
+		})
+
 		const publicTranslateLambda = createNodeJsLambda(
 			this,
 			"publicTranslateLambda",
