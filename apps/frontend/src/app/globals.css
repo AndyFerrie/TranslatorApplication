@@ -3,6 +3,11 @@
 @tailwind utilities;
 
 body {
-  color: var(--foreground);
   background: #adadad
+}
+
+@layer base {
+  :root {
+    --radius: 0.5rem
+  }
 }
