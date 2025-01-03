@@ -1,86 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { getCurrentUser, signIn, signOut } from "aws-amplify/auth"
-import Link from "next/link"
-
-function Login({ onSignedIn }: { onSignedIn: () => void }) {
-	const [email, setEmail] = useState<string>("")
-	const [password, setPassword] = useState<string>("")
-	const [error, setError] = useState<string | null>(null)
-
-	return (
-		<form
-			className="flex flex-col gap-4"
-			onSubmit={async (event) => {
-				event.preventDefault()
-				try {
-					await signIn({
-						username: email,
-						password,
-						options: {
-							userAttributes: {
-								email,
-							},
-						},
-					})
-					onSignedIn()
-				} catch (error: unknown) {
-					if (error instanceof Error) {
-						setError(error.message)
-					} else {
-						setError(String(error))
-					}
-				}
-			}}
-		>
-			<div className="flex flex-col">
-				<label
-					className="mb-2"
-					htmlFor="email"
-				>
-					Email:
-				</label>
-				<input
-					id="email"
-					value={email}
-					onChange={(event) => setEmail(event.target.value)}
-					type="email"
-				/>
-			</div>
-
-			<div className="flex flex-col">
-				<label
-					className="mb-2"
-					htmlFor="password"
-				>
-					Password:
-				</label>
-				<input
-					id="password"
-					value={password}
-					onChange={(event) => setPassword(event.target.value)}
-					type="password"
-				/>
-			</div>
-
-			<button
-				className="btn bg-blue-500 p-2 mt-2 rounded-md"
-				type="submit"
-			>
-				Login
-			</button>
-
-			<Link
-				className="hover:underline"
-				href="/register"
-			>
-				Register
-			</Link>
-			{error && <p className="text-red-600 font-bold">{error}</p>}
-		</form>
-	)
-}
+import { getCurrentUser, signOut } from "aws-amplify/auth"
+import { LoginForm } from "@/components"
 
 function Logout({ onSignedOut }: { onSignedOut: () => void }) {
 	return (
@@ -128,7 +50,7 @@ export default function User() {
 	}
 
 	return (
-		<Login
+		<LoginForm
 			onSignedIn={async () => {
 				const currentUser = await getCurrentUser()
 				setUser(currentUser)
