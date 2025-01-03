@@ -2,8 +2,8 @@
 
 import React from "react"
 import { RegistrationFormData, SignUpState } from "@/lib"
-import { signUp } from "aws-amplify/auth"
 import { useForm, SubmitHandler } from "react-hook-form"
+import { useUser } from "@/hooks"
 
 export const RegistrationForm = ({
 	onStepChange,
@@ -16,34 +16,20 @@ export const RegistrationForm = ({
 		formState: { errors },
 	} = useForm<RegistrationFormData>()
 
+	const { register: accountRegister } = useUser()
+
 	const onSubmit: SubmitHandler<RegistrationFormData> = async (
-		{ email, password, password2 },
+		data,
 		event
 	) => {
 		if (event) {
 			event.preventDefault()
 		}
-
-		try {
-			if (password !== password2) {
-				throw new Error("passwords do not match")
+		accountRegister(data).then((nextStep) => {
+			if (nextStep) {
+				onStepChange(nextStep)
 			}
-
-			const { nextStep } = await signUp({
-				username: email,
-				password: password,
-				options: {
-					userAttributes: {
-						email,
-					},
-					autoSignIn: true,
-				},
-			})
-
-			onStepChange(nextStep)
-		} catch (error: unknown) {
-			console.error(error)
-		}
+		})
 	}
 
 	return (

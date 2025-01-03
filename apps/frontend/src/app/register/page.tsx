@@ -1,23 +1,25 @@
 "use client"
 import { useEffect, useState } from "react"
-import { autoSignIn } from "aws-amplify/auth"
 import { useRouter } from "next/navigation"
 import { SignInState, SignUpState } from "@/lib"
 import { RegistrationForm } from "@/components/RegistrationForm"
 import { ConfirmSignUp } from "@/components"
+import { useUser } from "@/hooks"
 
 function AutoSignIn({
 	onStepChange,
 }: {
 	onStepChange: (step: SignInState) => void
 }) {
+	const { autoLogin } = useUser()
+
 	useEffect(() => {
-		const asyncSignIn = async () => {
-			const { nextStep } = await autoSignIn()
-			onStepChange(nextStep)
-		}
-		asyncSignIn()
-	}, [onStepChange])
+		autoLogin().then((nextStep) => {
+			if (nextStep) {
+				onStepChange(nextStep)
+			}
+		})
+	}, [])
 	return <div>Signing in...</div>
 }
 
