@@ -2,35 +2,20 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { translateApi } from "@/lib"
-import { AuthUser, getCurrentUser } from "aws-amplify/auth"
-import { useEffect, useState } from "react"
 import {
 	TranslatePrimaryKey,
 	TranslateRequest,
 } from "@translatorapplication/shared-types"
+import { useUser } from "./useUser"
 
 export const useTranslate = () => {
-	const [user, setUser] = useState<AuthUser | null | undefined>(undefined)
+	const { user } = useUser()
 	const queryClient = useQueryClient()
 	const queryKey = ["translate", user ? user.userId : ""]
-
-	useEffect(() => {
-		async function fetchUser() {
-			try {
-				const currentUser = await getCurrentUser()
-				setUser(currentUser)
-			} catch (error) {
-				console.log(error)
-				setUser(null)
-			}
-		}
-		fetchUser()
-	}, [setUser])
 
 	const translateQuery = useQuery({
 		queryKey,
 		queryFn: () => {
-			console.log("translate query fn")
 			if (!user) {
 				return []
 			}

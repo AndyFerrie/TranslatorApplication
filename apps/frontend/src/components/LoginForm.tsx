@@ -2,8 +2,8 @@
 
 import React from "react"
 import { LoginFormData } from "@/lib"
-import { signIn } from "aws-amplify/auth"
 import { useForm, SubmitHandler } from "react-hook-form"
+import { useUser } from "@/hooks/useUser"
 
 export const LoginForm = ({ onSignedIn }: { onSignedIn: () => void }) => {
 	const {
@@ -12,28 +12,15 @@ export const LoginForm = ({ onSignedIn }: { onSignedIn: () => void }) => {
 		formState: { errors },
 	} = useForm<LoginFormData>()
 
-	const onSubmit: SubmitHandler<LoginFormData> = async (
-		{ email, password },
-		event
-	) => {
+	const { login } = useUser()
+
+	const onSubmit: SubmitHandler<LoginFormData> = async (data, event) => {
 		if (event) {
 			event.preventDefault()
 		}
-
-		try {
-			await signIn({
-				username: email,
-				password,
-				options: {
-					userAttributes: {
-						email,
-					},
-				},
-			})
+		login(data).then(() => {
 			onSignedIn()
-		} catch (error: unknown) {
-			console.error(error)
-		}
+		})
 	}
 
 	return (

@@ -25,7 +25,6 @@ export const ConfirmSignUp = ({
 		}
 
 		try {
-			console.log("on confirm called")
 			const { nextStep } = await confirmSignUp({
 				confirmationCode: verificationCode,
 				username: email,
@@ -33,7 +32,7 @@ export const ConfirmSignUp = ({
 
 			onStepChange(nextStep)
 		} catch (error) {
-			console.log(error)
+			console.error(error)
 		}
 	}
 

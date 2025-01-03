@@ -28,7 +28,7 @@ export default function User() {
 				const currentUser = await getCurrentUser()
 				setUser(currentUser)
 			} catch (error) {
-				console.log(error)
+				console.error(error)
 				setUser(null)
 			}
 		}
