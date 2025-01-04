@@ -20,7 +20,7 @@ const AppContext = createContext<AppContext>({
 	setError: () => {},
 	resetError: () => {},
 	selectedTranslation: null,
-	setSelectedTranslation: (item: TranslateResult) => {},
+	setSelectedTranslation: () => {},
 })
 
 function useInitialApp(): AppContext {
