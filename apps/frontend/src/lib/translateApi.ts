@@ -15,9 +15,12 @@ export const translatePublicText = async (request: TranslateRequest) => {
 			body: JSON.stringify(request),
 		})
 
-		const returnValue = (await result.json()) as TranslateResult
+		const returnValue = (await result.json()) as TranslateResult | string
 
-		return returnValue
+		if (!result.ok) {
+			throw new Error(returnValue as string)
+		}
+		return returnValue as TranslateResult
 	} catch (e: unknown) {
 		console.error(e)
 		throw e
@@ -35,9 +38,12 @@ export const translateUsersText = async (request: TranslateRequest) => {
 			},
 		})
 
-		const returnValue = (await result.json()) as TranslateResult
+		const returnValue = (await result.json()) as TranslateResult | string
 
-		return returnValue
+		if (!result.ok) {
+			throw new Error(returnValue as string)
+		}
+		return returnValue as TranslateResult
 	} catch (e: unknown) {
 		console.error(e)
 		throw e
