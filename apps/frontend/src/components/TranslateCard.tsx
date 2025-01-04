@@ -7,6 +7,7 @@ import { ArrowRight, Trash2 } from "lucide-react"
 import { getDate, getTime } from "@/lib/helper"
 import { Button } from "./ui/button"
 import { useTranslate } from "@/hooks"
+import { Loading } from "./ui/loading"
 
 export const TranslateCard = ({
 	selected,
@@ -48,7 +49,7 @@ export const TranslateCard = ({
 					deleteTranslation(translateItem)
 				}}
 			>
-				{isDeleting ? "..." : <Trash2 />}
+				{isDeleting ? <Loading /> : <Trash2 />}
 			</Button>
 		</Card>
 	)
