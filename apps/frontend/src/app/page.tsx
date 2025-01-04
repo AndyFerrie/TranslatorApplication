@@ -1,46 +1,47 @@
 "use client"
 
 import { useTranslate } from "@/hooks"
-import { TranslateRequestForm } from "@/components"
+import { TranslateCard, TranslateRequestForm, useApp } from "@/components"
+
+import {
+	ResizableHandle,
+	ResizablePanel,
+	ResizablePanelGroup,
+} from "@/components/ui/resizable"
 
 export default function Home() {
-	const { isLoading, translations, deleteTranslation, isDeleting } =
-		useTranslate()
+	const { isLoading, translations } = useTranslate()
+	const { selectedTranslation, setSelectedTranslation } = useApp()
 
 	if (isLoading) {
 		return <p>loading...</p>
 	}
 
 	return (
-		<main className="flex min-h-screen flex-col items-center p-24">
-			<TranslateRequestForm />
-
-			<div className="flex flex-col">
-				{translations.map((item) => (
-					<div
-						className="flex flex-col justify-between rounded-lg p-4 m-4 bg-slate-400"
-						key={item.requestId}
-					>
-						<p>From: {item.sourceLang}</p>
-						<p className="bg-slate-200 p-1 rounded-md my-2">
-							{item.sourceText}
-						</p>
-						<p>To: {item.targetLang}</p>
-						<p className="bg-slate-200 p-1 rounded-md my-2">
-							{item.targetText}
-						</p>
-						<button
-							className="btn bg-red-500 hover:bg-red-400 rounded-md mt-2"
-							type="button"
-							onClick={() => {
-								deleteTranslation(item)
-							}}
-						>
-							{isDeleting ? "..." : "X"}
-						</button>
+		<main className="flex flex-col h-screen">
+			<ResizablePanelGroup direction="horizontal">
+				<ResizablePanel>
+					<div className="bg-gray-900 w-full h-full flex flex-col space-y-2 p-2">
+						{translations.map((item) => (
+							<TranslateCard
+								selected={
+									item.requestId ===
+									selectedTranslation?.requestId
+								}
+								onSelected={setSelectedTranslation}
+								key={item.requestId}
+								translateItem={item}
+							/>
+						))}
 					</div>
-				))}
-			</div>
+				</ResizablePanel>
+				<ResizableHandle withHandle />
+				<ResizablePanel>
+					<div className="p-4">
+						<TranslateRequestForm />
+					</div>
+				</ResizablePanel>
+			</ResizablePanelGroup>
 		</main>
 	)
 }
