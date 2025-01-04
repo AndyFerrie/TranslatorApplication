@@ -2,17 +2,32 @@
 
 import { useTranslate } from "@/hooks"
 import { TranslateRequest } from "@translatorapplication/shared-types"
-import React from "react"
+import React, { useEffect } from "react"
 import { useForm, SubmitHandler } from "react-hook-form"
+import { Label } from "./ui/label"
+import { Button } from "./ui/button"
+import { Input } from "./ui/input"
+import { Textarea } from "./ui/textarea"
+import { useApp } from "./AppProvider"
 
 export const TranslateRequestForm = () => {
 	const { translate, isTranslating } = useTranslate()
+	const { selectedTranslation } = useApp()
 
 	const {
 		register,
 		handleSubmit,
+		setValue,
 		formState: { errors },
 	} = useForm<TranslateRequest>()
+
+	useEffect(() => {
+		if (selectedTranslation) {
+			setValue("sourceLang", selectedTranslation?.sourceLang)
+			setValue("sourceText", selectedTranslation?.sourceText)
+			setValue("targetLang", selectedTranslation?.targetLang)
+		}
+	}, [selectedTranslation, setValue])
 
 	const onSubmit: SubmitHandler<TranslateRequest> = (data, event) => {
 		if (event) {
@@ -27,13 +42,13 @@ export const TranslateRequestForm = () => {
 			onSubmit={handleSubmit(onSubmit)}
 		>
 			<div className="flex flex-col">
-				<label
+				<Label
 					className="mb-2"
 					htmlFor="sourceText"
 				>
 					Input Text
-				</label>
-				<textarea
+				</Label>
+				<Textarea
 					id="sourceText"
 					rows={3}
 					{...register("sourceText", { required: true })}
@@ -42,13 +57,13 @@ export const TranslateRequestForm = () => {
 			</div>
 
 			<div className="flex flex-col">
-				<label
+				<Label
 					className="mb-2"
 					htmlFor="sourceLang"
 				>
 					Source Language
-				</label>
-				<input
+				</Label>
+				<Input
 					id="sourceLang"
 					type="text"
 					{...register("sourceLang", { required: true })}
@@ -57,13 +72,13 @@ export const TranslateRequestForm = () => {
 			</div>
 
 			<div className="flex flex-col">
-				<label
+				<Label
 					className="mb-2"
 					htmlFor="targetLang"
 				>
 					Target Language
-				</label>
-				<input
+				</Label>
+				<Input
 					id="targetLang"
 					type="text"
 					{...register("targetLang", { required: true })}
@@ -71,12 +86,24 @@ export const TranslateRequestForm = () => {
 				{errors.targetLang && <span>field required</span>}
 			</div>
 
-			<button
-				className="btn bg-blue-500 p-2 mt-2 rounded-md"
-				type="submit"
-			>
+			<Button type="submit">
 				{isTranslating ? "Translating..." : "Translate"}
-			</button>
+			</Button>
+
+			<div className="flex flex-col">
+				<Label
+					className="mb-2"
+					htmlFor="targetText"
+				>
+					Translated text:
+				</Label>
+				<Textarea
+					readOnly
+					id="targetText"
+					rows={3}
+					value={selectedTranslation?.targetText}
+				/>
+			</div>
 		</form>
 	)
 }

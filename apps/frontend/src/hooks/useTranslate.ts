@@ -9,7 +9,7 @@ import {
 import { useApp } from "@/components"
 
 export const useTranslate = () => {
-	const { user, setError } = useApp()
+	const { user, setError, setSelectedTranslation } = useApp()
 	const queryClient = useQueryClient()
 	const queryKey = ["translate", user ? user.userId : ""]
 
@@ -38,6 +38,7 @@ export const useTranslate = () => {
 					translateQuery.data.concat([result])
 				)
 			}
+			setSelectedTranslation(result)
 		},
 		onError: (error) => {
 			setError(error.toString())
