@@ -4,6 +4,9 @@ import React from "react"
 import { RegistrationFormData, SignUpState } from "@/lib"
 import { useForm, SubmitHandler } from "react-hook-form"
 import { useUser } from "@/hooks"
+import { Button } from "./ui/button"
+import { Input } from "./ui/input"
+import { Label } from "./ui/label"
 
 export const RegistrationForm = ({
 	onStepChange,
@@ -16,7 +19,7 @@ export const RegistrationForm = ({
 		formState: { errors },
 	} = useForm<RegistrationFormData>()
 
-	const { register: accountRegister } = useUser()
+	const { busy, register: accountRegister } = useUser()
 
 	const onSubmit: SubmitHandler<RegistrationFormData> = async (
 		data,
@@ -38,13 +41,14 @@ export const RegistrationForm = ({
 			onSubmit={handleSubmit(onSubmit)}
 		>
 			<div className="flex flex-col">
-				<label
+				<Label
 					className="mb-2"
 					htmlFor="email"
 				>
 					Email
-				</label>
-				<input
+				</Label>
+				<Input
+					disabled={busy}
 					id="email"
 					type="email"
 					{...register("email", { required: true })}
@@ -53,13 +57,14 @@ export const RegistrationForm = ({
 			</div>
 
 			<div className="flex flex-col">
-				<label
+				<Label
 					className="mb-2"
 					htmlFor="password"
 				>
 					Password
-				</label>
-				<input
+				</Label>
+				<Input
+					disabled={busy}
 					id="password"
 					type="password"
 					{...register("password", { required: true })}
@@ -68,13 +73,14 @@ export const RegistrationForm = ({
 			</div>
 
 			<div className="flex flex-col">
-				<label
+				<Label
 					className="mb-2"
 					htmlFor="password2"
 				>
 					Retype Password
-				</label>
-				<input
+				</Label>
+				<Input
+					disabled={busy}
 					id="password2"
 					type="password"
 					{...register("password2", { required: true })}
@@ -82,12 +88,9 @@ export const RegistrationForm = ({
 				{errors.password2 && <span>field required</span>}
 			</div>
 
-			<button
-				className="btn bg-blue-500 p-2 mt-2 rounded-md"
-				type="submit"
-			>
-				{"register"}
-			</button>
+			<Button type="submit">
+				{busy ? "registering..." : "register"}
+			</Button>
 		</form>
 	)
 }

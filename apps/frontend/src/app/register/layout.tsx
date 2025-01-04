@@ -4,8 +4,10 @@ export default function Layout({
 	children: React.ReactNode
 }>) {
 	return (
-		<main className="flex min-h-screen flex-col items-center p-24">
-			{children}
+		<main className="flex flex-col justify-center items-center m-8">
+			<div className="bg-white p-4 shadow-lg rounded-lg w-80">
+				{children}
+			</div>
 		</main>
 	)
 }

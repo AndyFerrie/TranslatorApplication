@@ -4,6 +4,9 @@ import React from "react"
 import { RegisterConfirmation, SignUpState } from "@/lib"
 import { useForm, SubmitHandler } from "react-hook-form"
 import { useUser } from "@/hooks"
+import { Button } from "./ui/button"
+import { Input } from "./ui/input"
+import { Label } from "./ui/label"
 
 export const ConfirmSignUp = ({
 	onStepChange,
@@ -16,7 +19,7 @@ export const ConfirmSignUp = ({
 		formState: { errors },
 	} = useForm<RegisterConfirmation>()
 
-	const { confirmRegister } = useUser()
+	const { busy, confirmRegister } = useUser()
 
 	const onSubmit: SubmitHandler<RegisterConfirmation> = async (
 		data,
@@ -39,13 +42,13 @@ export const ConfirmSignUp = ({
 			onSubmit={handleSubmit(onSubmit)}
 		>
 			<div className="flex flex-col">
-				<label
+				<Label
 					className="mb-2"
 					htmlFor="email"
 				>
 					Email
-				</label>
-				<input
+				</Label>
+				<Input
 					id="email"
 					type="email"
 					{...register("email", { required: true })}
@@ -54,13 +57,13 @@ export const ConfirmSignUp = ({
 			</div>
 
 			<div className="flex flex-col">
-				<label
+				<Label
 					className="mb-2"
 					htmlFor="verificationCode"
 				>
 					Verification Code
-				</label>
-				<input
+				</Label>
+				<Input
 					id="verificationCode"
 					type="string"
 					{...register("verificationCode", { required: true })}
@@ -68,12 +71,7 @@ export const ConfirmSignUp = ({
 				{errors.verificationCode && <span>field required</span>}
 			</div>
 
-			<button
-				className="btn bg-blue-500 p-2 mt-2 rounded-md"
-				type="submit"
-			>
-				{"confirm"}
-			</button>
+			<Button type="submit">{busy ? "confirming..." : "confirm"}</Button>
 		</form>
 	)
 }
