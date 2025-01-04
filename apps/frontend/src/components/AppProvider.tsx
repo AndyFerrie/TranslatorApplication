@@ -11,7 +11,7 @@ type AppContext = {
 	setError: (msg: string) => void
 	resetError: () => void
 	selectedTranslation: TranslateResult | null
-	setSelectedTranslation: (item: TranslateResult) => void
+	setSelectedTranslation: (item: TranslateResult | null) => void
 }
 
 const AppContext = createContext<AppContext>({

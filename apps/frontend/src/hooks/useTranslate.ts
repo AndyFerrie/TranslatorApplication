@@ -64,6 +64,7 @@ export const useTranslate = () => {
 			const copyData = [...translateQuery.data]
 			copyData.splice(index, 1)
 			queryClient.setQueryData(queryKey, copyData)
+			setSelectedTranslation(null)
 		},
 	})
 

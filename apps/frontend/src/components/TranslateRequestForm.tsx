@@ -26,6 +26,10 @@ export const TranslateRequestForm = () => {
 			setValue("sourceLang", selectedTranslation?.sourceLang)
 			setValue("sourceText", selectedTranslation?.sourceText)
 			setValue("targetLang", selectedTranslation?.targetLang)
+		} else {
+			setValue("sourceLang", "")
+			setValue("sourceText", "")
+			setValue("targetLang", "")
 		}
 	}, [selectedTranslation, setValue])
 
@@ -101,7 +105,7 @@ export const TranslateRequestForm = () => {
 					readOnly
 					id="targetText"
 					rows={3}
-					value={selectedTranslation?.targetText}
+					value={selectedTranslation?.targetText || ""}
 				/>
 			</div>
 		</form>
