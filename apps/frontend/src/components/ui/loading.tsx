@@ -4,7 +4,7 @@ export const Loading = ({ size = "sm" }: { size?: "md" | "sm" }) => (
 	<div className="flex items-center justify-center">
 		<svg
 			className={cn(
-				"animate-spin -ml-1 mr-3 text-gray-900",
+				"animate-spin text-gray-900",
 				size == "md" && "h-10 w-10",
 				size == "sm" && "h-5 w-5"
 			)}
