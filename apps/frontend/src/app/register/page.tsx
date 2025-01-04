@@ -19,7 +19,7 @@ function AutoSignIn({
 				onStepChange(nextStep)
 			}
 		})
-	}, [])
+	}, [autoLogin, onStepChange])
 	return <div>Signing in...</div>
 }
 
