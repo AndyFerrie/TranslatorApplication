@@ -27,6 +27,7 @@ export const TranslateRequestForm = () => {
 		register,
 		handleSubmit,
 		setValue,
+		getValues,
 		formState: { errors },
 	} = useForm<TranslateRequest>()
 
@@ -83,8 +84,13 @@ export const TranslateRequestForm = () => {
 						(i) => i.data.code === selectedTranslation?.sourceLang
 					)}
 					onSelect={(a) => {
-						setValue("sourceLang", a.data.code)
+						if (a.data.code === getValues("sourceLang")) {
+							setValue("sourceLang", "")
+						} else {
+							setValue("sourceLang", a.data.code)
+						}
 					}}
+					{...register("sourceLang", { required: true })}
 				/>
 				{errors.sourceLang && <span>field required</span>}
 			</div>
@@ -103,8 +109,13 @@ export const TranslateRequestForm = () => {
 						(i) => i.data.code === selectedTranslation?.targetLang
 					)}
 					onSelect={(a) => {
-						setValue("targetLang", a.data.code)
+						if (a.data.code === getValues("targetLang")) {
+							setValue("targetLang", "")
+						} else {
+							setValue("targetLang", a.data.code)
+						}
 					}}
+					{...register("targetLang", { required: true })}
 				/>
 				{errors.targetLang && <span>field required</span>}
 			</div>
