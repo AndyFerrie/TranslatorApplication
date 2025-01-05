@@ -6,9 +6,18 @@ import React, { useEffect } from "react"
 import { useForm, SubmitHandler } from "react-hook-form"
 import { Label } from "./ui/label"
 import { Button } from "./ui/button"
-import { Input } from "./ui/input"
 import { Textarea } from "./ui/textarea"
 import { useApp } from "./AppProvider"
+import { Combobox, ComboboxOption } from "./ui/combobox"
+import { Language, LANGUAGE_LIST } from "@/lib"
+
+const languageOptions: Array<ComboboxOption<Language>> = LANGUAGE_LIST.map(
+	(item) => ({
+		value: item.name,
+		label: item.name,
+		data: item,
+	})
+)
 
 export const TranslateRequestForm = () => {
 	const { translate, isTranslating } = useTranslate()
@@ -67,10 +76,15 @@ export const TranslateRequestForm = () => {
 				>
 					Source Language
 				</Label>
-				<Input
-					id="sourceLang"
-					type="text"
-					{...register("sourceLang", { required: true })}
+				<Combobox
+					placeholder="language"
+					options={languageOptions}
+					selected={languageOptions.find(
+						(i) => i.data.code === selectedTranslation?.sourceLang
+					)}
+					onSelect={(a) => {
+						setValue("sourceLang", a.data.code)
+					}}
 				/>
 				{errors.sourceLang && <span>field required</span>}
 			</div>
@@ -82,10 +96,15 @@ export const TranslateRequestForm = () => {
 				>
 					Target Language
 				</Label>
-				<Input
-					id="targetLang"
-					type="text"
-					{...register("targetLang", { required: true })}
+				<Combobox
+					placeholder="language"
+					options={languageOptions}
+					selected={languageOptions.find(
+						(i) => i.data.code === selectedTranslation?.targetLang
+					)}
+					onSelect={(a) => {
+						setValue("targetLang", a.data.code)
+					}}
 				/>
 				{errors.targetLang && <span>field required</span>}
 			</div>
