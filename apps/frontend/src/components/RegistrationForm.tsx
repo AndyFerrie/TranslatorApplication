@@ -89,7 +89,7 @@ export const RegistrationForm = ({
 			</div>
 
 			<Button type="submit">
-				{busy ? "registering..." : "register"}
+				{busy ? "Registering..." : "Register"}
 			</Button>
 		</form>
 	)

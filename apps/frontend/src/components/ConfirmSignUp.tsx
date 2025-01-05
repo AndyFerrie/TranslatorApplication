@@ -71,7 +71,7 @@ export const ConfirmSignUp = ({
 				{errors.verificationCode && <span>field required</span>}
 			</div>
 
-			<Button type="submit">{busy ? "confirming..." : "confirm"}</Button>
+			<Button type="submit">{busy ? "Confirming..." : "Confirm"}</Button>
 		</form>
 	)
 }

@@ -78,7 +78,7 @@ export const TranslateRequestForm = () => {
 					Source Language
 				</Label>
 				<Combobox
-					placeholder="language"
+					placeholder="Language"
 					options={languageOptions}
 					selected={languageOptions.find(
 						(i) => i.data.code === selectedTranslation?.sourceLang
@@ -103,7 +103,7 @@ export const TranslateRequestForm = () => {
 					Target Language
 				</Label>
 				<Combobox
-					placeholder="language"
+					placeholder="Language"
 					options={languageOptions}
 					selected={languageOptions.find(
 						(i) => i.data.code === selectedTranslation?.targetLang

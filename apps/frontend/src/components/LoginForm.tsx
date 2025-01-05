@@ -65,7 +65,7 @@ export const LoginForm = ({ onSignedIn }: { onSignedIn?: () => void }) => {
 				{errors.password && <span>field required</span>}
 			</div>
 
-			<Button type="submit">{busy ? "logging in..." : "login"}</Button>
+			<Button type="submit">{busy ? "Logging in..." : "Login"}</Button>
 		</form>
 	)
 }
