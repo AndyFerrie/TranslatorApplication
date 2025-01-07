@@ -30,7 +30,13 @@ export const TranslateRequestForm = () => {
 		setValue,
 		getValues,
 		formState: { errors },
-	} = useForm<TranslateRequest>()
+	} = useForm<TranslateRequest>({
+		defaultValues: {
+			sourceLang: "",
+			sourceText: "",
+			targetLang: "",
+		},
+	})
 
 	useEffect(() => {
 		if (selectedTranslation) {
