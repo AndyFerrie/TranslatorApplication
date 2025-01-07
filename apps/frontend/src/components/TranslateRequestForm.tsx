@@ -26,6 +26,7 @@ export const TranslateRequestForm = () => {
 	const {
 		register,
 		handleSubmit,
+		clearErrors,
 		setValue,
 		getValues,
 		formState: { errors },
@@ -65,9 +66,16 @@ export const TranslateRequestForm = () => {
 				<Textarea
 					id="sourceText"
 					rows={3}
-					{...register("sourceText", { required: true })}
+					{...register("sourceText", {
+						required: true,
+						validate: (value) => value.trim() !== "",
+					})}
 				/>
-				{errors.sourceText && <span>field required</span>}
+				{errors.sourceText && (
+					<span className="text-red-500 font-bold mt-2">
+						Input text cannot be blank
+					</span>
+				)}
 			</div>
 
 			<div className="flex flex-col">
@@ -88,11 +96,16 @@ export const TranslateRequestForm = () => {
 							setValue("sourceLang", "")
 						} else {
 							setValue("sourceLang", a.data.code)
+							clearErrors("sourceLang")
 						}
 					}}
 					{...register("sourceLang", { required: true })}
 				/>
-				{errors.sourceLang && <span>field required</span>}
+				{errors.sourceLang && (
+					<span className="text-red-500 font-bold mt-2">
+						Please select a source language
+					</span>
+				)}
 			</div>
 
 			<div className="flex flex-col">
@@ -113,11 +126,16 @@ export const TranslateRequestForm = () => {
 							setValue("targetLang", "")
 						} else {
 							setValue("targetLang", a.data.code)
+							clearErrors("targetLang")
 						}
 					}}
 					{...register("targetLang", { required: true })}
 				/>
-				{errors.targetLang && <span>field required</span>}
+				{errors.targetLang && (
+					<span className="text-red-500 font-bold mt-2">
+						Please select a target language
+					</span>
+				)}
 			</div>
 
 			<Button type="submit">
