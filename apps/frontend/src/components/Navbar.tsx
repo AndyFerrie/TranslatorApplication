@@ -63,7 +63,7 @@ export function UserNav() {
 								logout()
 							}}
 						>
-							{busy ? "logging out..." : "logout"}
+							{busy ? "Logging out..." : "Logout"}
 						</DropdownMenuItem>
 					</DropdownMenuGroup>
 				)}
